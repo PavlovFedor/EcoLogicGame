@@ -4,11 +4,12 @@ using Unity.VisualScripting.Antlr3.Runtime.Tree;
 
 public class ProceduralMapGenerationCommon : MonoBehaviour
 {
+    //Для чанков
     public GameObject[] listOfChunks;
     public int widthOfChunksGrid;
     public int heightOfChunksGrid;
     public int stepPrefabChunks;
-    
+    //Для стен
     public GameObject[] listOfWalls;
     public int widthOfWalls;
     public int heightOfWalls;
@@ -21,15 +22,17 @@ public class ProceduralMapGenerationCommon : MonoBehaviour
     public Vector3 StartSpawnPositionChunks = new Vector3(0f, 0f, 0f);
     public Vector3 StartSpawnPositionWalls = new Vector3(0f, 0f, 0f);
 
+    //Offset для спавна стен
+    //Right
     public int RightXWallsOffset_StartSpawnPosition = 0;
     public int RightYWallsOffset_StartSpawnPosition = 0;
-
+    //Left
     public int LeftXWallsOffset_StartSpawnPosition = 0;
     public int LeftYWallsOffset_StartSpawnPosition = 0;
-
+    //Up
     public int UpXWallsOffset_StartSpawnPosition = 0;
     public int UpYWallsOffset_StartSpawnPosition = 0;
-
+    //Down
     public int DownXWallsOffset_StartSpawnPosition = 0;
     public int DownYWallsOffset_StartSpawnPosition = 0;
     
@@ -46,6 +49,7 @@ public class ProceduralMapGenerationCommon : MonoBehaviour
     {
         SpawnMap();
     }
+
     public void SpawnMap()
     {
         grid = new GameObject[widthOfChunksGrid, heightOfChunksGrid];
@@ -127,9 +131,12 @@ public class ProceduralMapGenerationCommon : MonoBehaviour
                     GameObject wall = Instantiate(listOfWalls[randomIndex], spawnPosition, spawnRotation);
                     wall.transform.parent = walls.transform;
                 }          
-
             }
         }        
     }
 
+    public GameObject GetChunkAt(int x, int z)
+    {
+        return grid[x,z];
+    }
 }

@@ -1,11 +1,14 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 public class LevelButtonProcessing : MonoBehaviour
 {
     public TextMeshProUGUI titleLevelText;
     private Level levelDataset;
     public Button lvlbtn;
+
+    private Biome biomeDataset;
     private void Start()
     {
         lvlbtn.onClick.AddListener(RunLevel);
@@ -17,6 +20,10 @@ public class LevelButtonProcessing : MonoBehaviour
     }
     public void RunLevel()
     {
-        Debug.Log(levelDataset.sceneName);
+        SceneManager.LoadScene(levelDataset.sceneName);
+    }
+    public void SetBiomeDatset(Biome biome)
+    {
+        biomeDataset = biome;
     }
 }

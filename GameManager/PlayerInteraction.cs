@@ -11,6 +11,17 @@ public class PlayerInteraction : MonoBehaviour
     public MonoBehaviour movementScript; // Скрипт перемещения (например, FirstPersonController)
     public MonoBehaviour cameraScript; // Скрипт вращения камеры
     public GameObject psl;
+    public GameObject pauseMenuMap;
+    public GameObject howToPlay;
+    private void Start()
+    {
+        if(SaveSystem.Instance.GetHowToPlayFlag())
+        {
+            howToPlay.SetActive(true);
+            SaveSystem.Instance.SetHowToPlayFlag(false);
+            SetPlayerControls(false);
+        }
+    }
     private void Update()
     {
         CheckForInteractable();
@@ -42,23 +53,31 @@ public class PlayerInteraction : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.E) && currentInteractable != null)
         {
             currentInteractable.ObjSelector();
-            ShowLevelsPanel();
+            ShowPanel(psl);
+        }
+        if (Input.GetKeyDown(KeyCode.Escape) && currentInteractable == null)
+        {
+            ShowPanel(pauseMenuMap);
+        }
+        if (Input.GetKeyDown(KeyCode.Tab) && currentInteractable == null)
+        {
+            ShowPanel(howToPlay);
         }
     }
-    public void ShowLevelsPanel()
+    public void ShowPanel(GameObject panel)
     {
         // Открываем панель
-        psl.SetActive(true);
+        panel.SetActive(true);
 
         // Блокируем управление
         SetPlayerControls(false);
     }
 
     // В методе закрытия панели
-    public void HideLevelsPanel()
+    public void HidePanel(GameObject panel)
     {
         // Закрываем панель
-        psl.SetActive(false);
+        panel.SetActive(false);
 
         // Восстанавливаем управление
         SetPlayerControls(true);

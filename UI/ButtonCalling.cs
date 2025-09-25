@@ -8,7 +8,6 @@ public class ButtonCalling : MonoBehaviour
     public GameObject SaveGame;
     public GameObject LoadGame;
     public GameObject SettingsMenu;
-    public GameObject[] targetObject;
     public void ClickContinue()
     {
         Debug.Log("Continue");
@@ -33,8 +32,24 @@ public class ButtonCalling : MonoBehaviour
     {
         Debug.Log("Open menu");
     }
-    public void CLickButtonReturnSettings(int i)
+    public void ClickStartCode()
     {
-        targetObject[i].SetActive(false);
+        Debug.Log("Start code");
+    }
+    public void ClickStopCode()
+    {
+        Debug.Log("Stop code");
+    }
+    public void CLickButtonReturnSettings()
+    {
+        SettingsMenu.SetActive(false);
+    }
+    public void CLickButtonReturnSaveGame()
+    {
+        SaveGame.SetActive(false);
+    }
+    public void CLickButtonReturnLoadGame()
+    {
+        LoadGame.SetActive(false);
     }
 }

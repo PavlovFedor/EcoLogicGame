@@ -7,7 +7,7 @@ public class PMGwithMask : ProceduralMapGenerationCommon
 {
     //Скрипт маски для генерации карт с заданными статичными чанками
     private GameObject chunk;
-    private StaticChunk buferChunk;
+    private StaticChunk buferChunk = new StaticChunk();
     private Vector3 spawnPosition;
     private Quaternion spawnRotation;
     private enum rotateChunk
@@ -20,7 +20,7 @@ public class PMGwithMask : ProceduralMapGenerationCommon
 
     //Данные статичного чанка  
     [System.Serializable]
-    public struct StaticChunk
+    public class StaticChunk
     {
         public int x;
         public int y;
@@ -71,7 +71,7 @@ public class PMGwithMask : ProceduralMapGenerationCommon
                 }
 
                 //Проверяем не находится ли позиция в списке запрещенных
-                if (isChunkMasked(x, y))
+                if (isChunkMasked(x, y) && buferChunk.prefabChunk != null)
                 {
                     // Создаём префаб маски
                     chunk = Instantiate(buferChunk.prefabChunk, spawnPosition, spawnRotation);
@@ -92,6 +92,12 @@ public class PMGwithMask : ProceduralMapGenerationCommon
 
     public bool isChunkMasked(int x, int y)
     {
+        if (staticChunkMask == null)
+        {
+            Debug.Log($"Маска чанков пуста. Все чанки случайны");
+            return false;
+        } 
+
         foreach (var staticChunk in staticChunkMask)
         {
             if (staticChunk.x == x && staticChunk.y == y)

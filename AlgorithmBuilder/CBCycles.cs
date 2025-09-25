@@ -42,10 +42,10 @@ public class CBCycles : CodeBlock
         Debug.Log($"{blockA.blockName} connected to {blockB.blockName}.");
     }
 
-    public override void Execute()
+    /*public override void Execute()
     {
         Debug.Log($"Блок {blockName} выполнен.");
-    }
+    }*/
 }
 /*
 ### Описание скрипта

@@ -36,6 +36,7 @@ public class PSLDataProcessing : MonoBehaviour
             }
             GameObject btnlvl = Instantiate(levelButtonPrefab, levelList);
             btnlvl.GetComponent<LevelButtonProcessing>().lvlDataProcessing(lvl);
+            btnlvl.GetComponent<LevelButtonProcessing>().SetBiomeDatset(biome);
         }
         countLvls.text = $"{completedLevelsInObj}/{totalLevelsInObj}";
     }

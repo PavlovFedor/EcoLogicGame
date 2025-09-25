@@ -2,41 +2,77 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System.Collections;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Collections.Generic;
 
 public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
-
     [HideInInspector]
-    public Transform parentToReturnTo; // Объект-родитель для возвращения блока
+    public Transform parentToReturnTo; // РћР±СЉРµРєС‚-СЂРѕРґРёС‚РµР»СЊ РґР»СЏ РІРѕР·РІСЂР°С‰РµРЅРёСЏ Р±Р»РѕРєР°
     [HideInInspector]
-    public Transform placeHolderParent; // Объект-родитель, в котором находится буфер
+    public Transform placeHolderParent; // РћР±СЉРµРєС‚-СЂРѕРґРёС‚РµР»СЊ, РІ РєРѕС‚РѕСЂРѕРј РЅР°С…РѕРґРёС‚СЃСЏ Р±СѓС„РµСЂ
 
-    private GameObject placeHolder; // Буфер перемещения
-    private GameObject clone; // Скопированный блок
+    private GameObject placeHolder; // Р‘СѓС„РµСЂ РїРµСЂРµРјРµС‰РµРЅРёСЏ
+    private GameObject clone; // РЎРєРѕРїРёСЂРѕРІР°РЅРЅС‹Р№ Р±Р»РѕРє
 
     [HideInInspector]
     public bool flagForDragging;
+
+    // РЎРєСЂРёРїС‚ РјРµРЅРµРґР¶РµСЂР° Р±Р»РѕРєРѕРІ РєРѕРґР°
+    private CodeBlockManager codeBlockManager;
+
+    void Start(){
+        GameObject canvas = GameObject.Find("Canvas");
+
+        // РџСЂРѕРІРµСЂСЏРµРј, С‡С‚Рѕ РѕР±СЉРµРєС‚ Р±С‹Р» РЅР°Р№РґРµРЅ
+        if (canvas != null)
+        {
+            // РџРѕР»СѓС‡Р°РµРј РєРѕРјРїРѕРЅРµРЅС‚ CodeBlockManager
+            codeBlockManager = canvas.GetComponent<CodeBlockManager>();
+
+            // РџСЂРѕРІРµСЂСЏРµРј, С‡С‚Рѕ РєРѕРјРїРѕРЅРµРЅС‚ Р±С‹Р» РЅР°Р№РґРµРЅ
+            if (codeBlockManager == null)
+            {
+                Debug.LogError("РљРѕРјРїРѕРЅРµРЅС‚ CodeBlockManager РЅРµ РЅР°Р№РґРµРЅ РЅР° РѕР±СЉРµРєС‚Рµ Canvas.");
+            }
+        }
+        else
+        {
+            Debug.LogError("РћР±СЉРµРєС‚ Canvas РЅРµ РЅР°Р№РґРµРЅ РІ СЃС†РµРЅРµ.");
+        }
+    }
+
     public void OnBeginDrag(PointerEventData eventData)
     {
-        // Функция вызывается после начала перемещения блока
+        // Р¤СѓРЅРєС†РёСЏ РІС‹Р·С‹РІР°РµС‚СЃСЏ РїРѕСЃР»Рµ РЅР°С‡Р°Р»Р° РїРµСЂРµРјРµС‰РµРЅРёСЏ Р±Р»РѕРєР°
 
-        // Проверяем на отношение пермещаемого объекта к SBCFieldOne
-        // Когда перемещаем объект из SBCFieldOne, сам объект копируется, объект из другого поля просто перемещается без копирования
-        if (transform.parent.parent.parent == GameObject.Find("SBCFieldOne").GetComponent<Transform>())
+        // РџСЂРѕРІРµСЂСЏРµРј РЅР° РѕС‚РЅРѕС€РµРЅРёРµ РїРµСЂРµРјРµС‰Р°РµРјРѕРіРѕ РѕР±СЉРµРєС‚Р° Рє SBCFieldOne
+        // РљРѕРіРґР° РїРµСЂРµРјРµС‰Р°РµРј РѕР±СЉРµРєС‚ РёР· SBCFieldOne, СЃР°Рј РѕР±СЉРµРєС‚ РєРѕРїРёСЂСѓРµС‚СЃСЏ, РѕР±СЉРµРєС‚ РёР· РґСЂСѓРіРѕРіРѕ РїРѕР»СЏ РїСЂРѕСЃС‚Рѕ РїРµСЂРµРјРµС‰Р°РµС‚СЃСЏ Р±РµР· РєРѕРїРёСЂРѕРІР°РЅРёСЏ
+        if (transform.parent == null || transform.parent.parent == null)
+        {
+            Debug.LogError("Invalid object hierarchy");
+            return;
+        }
+
+        if (transform.parent.parent.parent != GameObject.Find("SBCFieldTwo").GetComponent<Transform>())
         {
             flagForDragging = true;
-            clone = Instantiate(gameObject, transform.parent); // Копируем перемещаемый блок
+            clone = Instantiate(gameObject, transform.parent); // РљРѕРїРёСЂСѓРµРј РїРµСЂРµРјРµС‰Р°РµРјС‹Р№ Р±Р»РѕРє
         }
         else
         {
             flagForDragging = false;
             clone = gameObject;
+            // РЈРґР°Р»СЏРµРј Р±Р»РѕРє РёР· С‚РµРєСѓС‰РµР№ РїРѕР·РёС†РёРё (С‚Р°Рє РєР°Рє РјС‹ РµРіРѕ РїРµСЂРµРјРµС‰Р°РµРј) 
+            List<CodeBlock> CB = FindScriptListBlockCode(gameObject);  
+            codeBlockManager.DeleteCodeBlock(transform.GetSiblingIndex(), CB);
         }
 
-        placeHolder = new GameObject(); // Добавляем буфер
+        placeHolder = new GameObject(); // Р”РѕР±Р°РІР»СЏРµРј Р±СѓС„РµСЂ
         placeHolder.transform.SetParent(clone.transform.parent);
 
-        // Присваеваем буферу размеры от блока
+        // РџСЂРёСЃРІР°РµРІР°РµРј Р±СѓС„РµСЂСѓ СЂР°Р·РјРµСЂС‹ РѕС‚ Р±Р»РѕРєР°
         LayoutElement le = placeHolder.AddComponent<LayoutElement>();
         le.preferredWidth = clone.GetComponent<LayoutElement>().preferredWidth;
         le.preferredHeight = clone.GetComponent<LayoutElement>().preferredHeight;
@@ -45,33 +81,48 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
 
         placeHolder.transform.SetSiblingIndex(clone.transform.GetSiblingIndex());
         
-        parentToReturnTo = clone.transform.parent; // Присваиваем объект-родителя для возвращения блока
+        parentToReturnTo = clone.transform.parent; // РџСЂРёСЃРІР°РёРІР°РµРј РѕР±СЉРµРєС‚-СЂРѕРґРёС‚РµР»СЏ РґР»СЏ РІРѕР·РІСЂР°С‰РµРЅРёСЏ Р±Р»РѕРєР°
         placeHolderParent = parentToReturnTo;
-        clone.transform.SetParent(clone.transform.root); // Временно перемещаем блок в вверхнюю иерархию
-        clone.transform.SetAsLastSibling(); // Временно перемещаем в последний индекс, чтобы не уходил под Background
+        clone.transform.SetParent(clone.transform.root); // Р’СЂРµРјРµРЅРЅРѕ РїРµСЂРµРјРµС‰Р°РµРј Р±Р»РѕРє РІ РІРµСЂС…РЅСЋСЋ РёРµСЂР°СЂС…РёСЋ
+        clone.transform.SetAsLastSibling(); // Р’СЂРµРјРµРЅРЅРѕ РїРµСЂРµРјРµС‰Р°РµРј РІ РїРѕСЃР»РµРґРЅРёР№ РёРЅРґРµРєСЃ, С‡С‚РѕР±С‹ РЅРµ СѓС…РѕРґРёР» РїРѕРґ Background
         clone.GetComponent<CanvasGroup>().blocksRaycasts = false;
     }
 
     public void OnDrag(PointerEventData eventData)
     {
-        // Функция вызывается во время перемещения блока
-        clone.transform.position = eventData.position; // Синхронизация местоположения перемещаемого объекта с курсором
-        // Синхронизация перемещаемого объекта по иерархии
+        // Р¤СѓРЅРєС†РёСЏ РІС‹Р·С‹РІР°РµС‚СЃСЏ РІРѕ РІСЂРµРјСЏ РїРµСЂРµРјРµС‰РµРЅРёСЏ Р±Р»РѕРєР°
+        
+        // РџСЂРѕРІРµСЂСЏРµРј, С‡С‚Рѕ clone СЃСѓС‰РµСЃС‚РІСѓРµС‚
+        if (clone == null)
+        {
+            Debug.LogError("Clone is null in OnDrag");
+            return;
+        }
+
+        // РЎРёРЅС…СЂРѕРЅРёР·Р°С†РёСЏ РјРµСЃС‚РѕРїРѕР»РѕР¶РµРЅРёСЏ РїРµСЂРµРјРµС‰Р°РµРјРѕРіРѕ РѕР±СЉРµРєС‚Р° СЃ РєСѓСЂСЃРѕСЂРѕРј
+        clone.transform.position = eventData.position; 
+        // РЎРёРЅС…СЂРѕРЅРёР·Р°С†РёСЏ РїРµСЂРµРјРµС‰Р°РµРјРѕРіРѕ РѕР±СЉРµРєС‚Р° РїРѕ РёРµСЂР°СЂС…РёРё
         if (placeHolder.transform.parent != placeHolderParent)
         {
             placeHolder.transform.SetParent(placeHolderParent);
         }
 
-        // Вне зоны выпадения блоков буфер выключается
+        // Р’РЅРµ Р·РѕРЅС‹ РІС‹РїР°РґРµРЅРёСЏ Р±Р»РѕРєРѕРІ Р±СѓС„РµСЂ РІС‹РєР»СЋС‡Р°РµС‚СЃСЏ
         if (!flagForDragging)
         {
-            placeHolder.SetActive(true);
+            // РџСЂРѕРІРµСЂСЏРµРј Р°РєС‚РёРІРЅРѕСЃС‚СЊ placeHolder
+            if (!placeHolder.activeSelf)
+                placeHolder.SetActive(true);
+            
             int newSiblingIndex = placeHolderParent.childCount;
 
-            // Пробег по уровню ветки
+            // РџСЂРѕР±РµРі РїРѕ СѓСЂРѕРІРЅСЋ РІРµС‚РєРё
             for (int i = 0; i < placeHolderParent.childCount; i++)
             {
-                if (clone.transform.position.y > placeHolderParent.GetChild(i).position.y)
+                Transform child = placeHolderParent.GetChild(i);
+                if (child == null) continue;
+
+                if (clone.transform.position.y > child.position.y)
                 {
                     newSiblingIndex = i;
 
@@ -81,54 +132,104 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
                     break;
                 }
             }
-            placeHolder.transform.SetSiblingIndex(newSiblingIndex); // Устанавливаем одноуровневый индекс внутри объекта-родителя буферу
+            // РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј РѕРґРЅРѕСѓСЂРѕРІРЅРµРІС‹Р№ РёРЅРґРµРєСЃ РІРЅСѓС‚СЂРё РѕР±СЉРµРєС‚Р°-СЂРѕРґРёС‚РµР»СЏ Р±СѓС„РµСЂСѓ
+            placeHolder.transform.SetSiblingIndex(newSiblingIndex); 
             AutoScrolling();
         }
         else
         {
-            placeHolder.SetActive(false);
+            if (placeHolder != null && placeHolder.activeSelf)
+                placeHolder.SetActive(false);        
         }
     }
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        // Функция вызывается после окончания перемещения блока
-        // Блок автоматически удаляется вне зоны выпадения блока
-        if (!flagForDragging)
+        if (!flagForDragging && parentToReturnTo.parent.parent == GameObject.Find("SBCFieldTwo").GetComponent<Transform>()) // Р•СЃР»Рё РїРµСЂРµС‚Р°СЃРєРёРІР°Р»Рё Р±Р»РѕРє РІРЅСѓС‚СЂРё Р·РѕРЅС‹ СЃС‚СЂРѕРёС‚РµР»СЏ
         {
+            Debug.LogWarning("Р‘Р»РѕРє РїРµСЂРµС‚Р°С‰РёР»Рё РІРЅСѓС‚СЂСЊ СЃС‚СЂРѕРёС‚РµР»СЏ");
+            List<CodeBlock> CB = FindScriptListBlockCode(placeHolder);              
+ 
             clone.transform.SetParent(parentToReturnTo);
             clone.transform.SetSiblingIndex(placeHolder.transform.GetSiblingIndex());
             clone.GetComponent<CanvasGroup>().blocksRaycasts = true;
-            Destroy(placeHolder); // После перемещения блока удаляем буфер
-        }
-        else
-        {
-            Destroy(clone);
             Destroy(placeHolder);
+            
+            codeBlockManager.InsertCodeBlock(clone.transform.GetSiblingIndex(), clone, CB);
         }
+        else // Р•СЃР»Рё РїРµСЂРµС‚Р°СЃРєРёРІР°Р»Рё РёР· Р·РѕРЅС‹ РІС‹Р±РѕСЂР°
+        {
+            // Р”РѕР±Р°РІР»СЏРµРј РІ СЃРїРёСЃРѕРє С‚РѕР»СЊРєРѕ РµСЃР»Рё СѓСЃРїРµС€РЅРѕ РїРѕРјРµСЃС‚РёР»Рё РІ Р·РѕРЅСѓ СЃС‚СЂРѕРёС‚РµР»СЏ
+            if (!flagForDragging || placeHolder.transform.parent.parent.CompareTag("Multiblock"))
+            {
+                Debug.LogWarning("РџРµСЂРµС‚Р°С‰РёР»Рё РІ РјСѓР»СЊС‚РёР±Р»РѕРє");
+                List<CodeBlock> CB = FindScriptListBlockCode(placeHolder);  
+            
+                clone.transform.SetParent(parentToReturnTo);
+                clone.transform.SetSiblingIndex(placeHolder.transform.GetSiblingIndex());
+                clone.GetComponent<CanvasGroup>().blocksRaycasts = true;     
+                Destroy(placeHolder);
+
+                codeBlockManager.InsertCodeBlock(clone.transform.GetSiblingIndex(), clone, CB);
+            }
+            else
+            {
+                // Р•СЃР»Рё РЅРµ РїРѕРїР°Р»Рё РІ Р·РѕРЅСѓ СЃС‚СЂРѕРёС‚РµР»СЏ - СѓРЅРёС‡С‚РѕР¶Р°РµРј РєР»РѕРЅ
+                Debug.LogWarning("Р’РЅРµ Р·РѕРЅ РґРѕСЃС‚СѓРїР°");
+                Destroy(clone);
+                Destroy(placeHolder);
+            }
+        }
+    }
+
+    private List<CodeBlock> FindScriptListBlockCode(GameObject go)
+    {
+        //СЌС‚Рѕ РѕСЃРЅРѕРІР°
+        if( go.transform.parent.parent.parent == GameObject.Find("SBCFieldTwo").GetComponent<Transform>())
+        {
+            CodeBlock scriptCB = GetComponent<CodeBlock>();
+            return codeBlockManager.codeBlocks;
+        }//СЌС‚Рѕ Р±Р»РѕРє РµСЃР»Рё
+        else if( go.transform.parent.parent.CompareTag("Multiblock"))
+        {
+            CodeBlock scriptCBmulti = go.transform.parent.parent.GetComponent<CodeBlock>();
+            if(go.transform.parent.gameObject.name == "Container1") return scriptCBmulti.codeBlockList1;
+            if(go.transform.parent.gameObject.name == "Container2") return scriptCBmulti.codeBlockList2;
+        }
+        return null;
     }
 
     private void AutoScrolling()
     {
-        // Функция вызывается при перемещении блока к верхнему или нижнему края поля
+        // Р¤СѓРЅРєС†РёСЏ РІС‹Р·С‹РІР°РµС‚СЃСЏ РїСЂРё РїРµСЂРµРјРµС‰РµРЅРёРё Р±Р»РѕРєР° Рє РІРµСЂС…РЅРµРјСѓ РёР»Рё РЅРёР¶РЅРµРјСѓ РєСЂР°СЋ РїРѕР»СЏ
 
-        ScrollRect scrollRect = GameObject.Find("SBCFieldTwo").GetComponent<ScrollRect>();
+        GameObject sbcFieldTwo = GameObject.Find("SBCFieldTwo");
+        if (sbcFieldTwo == null)
+        {
+            Debug.LogError("SBCFieldTwo not found");
+            return;
+        }
+
+        ScrollRect scrollRect = sbcFieldTwo.GetComponent<ScrollRect>();
+        if (scrollRect == null || scrollRect.viewport == null || scrollRect.content == null)
+        {
+            Debug.LogError("ScrollRect components not properly initialized");
+            return;
+        }
+
         RectTransform scrollContent = scrollRect.content;
 
-        // Получаем размеры областей поля
+        // РџРѕР»СѓС‡Р°РµРј СЂР°Р·РјРµСЂС‹ РѕР±Р»Р°СЃС‚РµР№ РїРѕР»СЏ
         Vector2 viewportSize = scrollRect.viewport.rect.size;
-        Vector2 contentSize = scrollContent.rect.size;
-
-        // Позиция блока относительно области контейнера поляы
         Vector2 localPosition = scrollRect.viewport.InverseTransformPoint(clone.transform.position);
-        // Проверка краев поля
+        // РџСЂРѕРІРµСЂРєР° РєСЂР°РµРІ РїРѕР»СЏ
         if (localPosition.y > -50)
         {
-            scrollRect.verticalNormalizedPosition += 0.05f; // Пролистываем вверх
+            scrollRect.verticalNormalizedPosition += 0.05f; // РџСЂРѕР»РёСЃС‚С‹РІР°РµРј РІРІРµСЂС…
         }
         else if (localPosition.y < -viewportSize.y + 50)
         {
-            scrollRect.verticalNormalizedPosition -= 0.05f; // Пролистываем вниз
+            scrollRect.verticalNormalizedPosition -= 0.05f; // РџСЂРѕР»РёСЃС‚С‹РІР°РµРј РІРЅРёР·
         }
     }
 }

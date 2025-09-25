@@ -7,12 +7,12 @@ public class ButtonCallingSaveSystem : MonoBehaviour
         SaveSystem saveSys = FindAnyObjectByType<SaveSystem>();
         saveSys.SaveNewGame(CellId);
         saveSys.LoadGameData(CellId);
-        SceneManager.LoadScene("PanelSelectLevelPrototype");
+        SceneManager.LoadScene("MainMapV1.8Animated");
     }
     public void ClickLoadSlot(int CellId)
     {
         SaveSystem saveSys = FindAnyObjectByType<SaveSystem>();
         saveSys.LoadGameData(CellId);
-        SceneManager.LoadScene("PanelSelectLevelPrototype");
+        SceneManager.LoadScene("MainMapV1.8Animated");
     }
 }

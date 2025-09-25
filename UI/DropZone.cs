@@ -7,14 +7,14 @@ public class DropZone : MonoBehaviour, IDropHandler, IPointerEnterHandler, IPoin
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        // Функция вызывается когда курсор с блоком входит в зону выпадения блока
+        // Г”ГіГ­ГЄГ¶ГЁГї ГўГ»Г§Г»ГўГ ГҐГІГ±Гї ГЄГ®ГЈГ¤Г  ГЄГіГ°Г±Г®Г° Г± ГЎГ«Г®ГЄГ®Г¬ ГўГµГ®Г¤ГЁГІ Гў Г§Г®Г­Гі ГўГ»ГЇГ Г¤ГҐГ­ГЁГї ГЎГ«Г®ГЄГ 
 
         if (eventData.pointerDrag == null)
         {
             return;
         }
         Draggable d = eventData.pointerDrag.GetComponent<Draggable>();
-        if (d != null) // Предусматриваем от NullException
+        if (d != null) // ГЏГ°ГҐГ¤ГіГ±Г¬Г ГІГ°ГЁГўГ ГҐГ¬ Г®ГІ NullException
         {
             d.placeHolderParent = transform.GetChild(0);
             d.flagForDragging = false;
@@ -23,7 +23,7 @@ public class DropZone : MonoBehaviour, IDropHandler, IPointerEnterHandler, IPoin
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        // Функция вызывается когда курсор с блоком выходит за пределы зоны выпадения блока
+        // Г”ГіГ­ГЄГ¶ГЁГї ГўГ»Г§Г»ГўГ ГҐГІГ±Гї ГЄГ®ГЈГ¤Г  ГЄГіГ°Г±Г®Г° Г± ГЎГ«Г®ГЄГ®Г¬ ГўГ»ГµГ®Г¤ГЁГІ Г§Г  ГЇГ°ГҐГ¤ГҐГ«Г» Г§Г®Г­Г» ГўГ»ГЇГ Г¤ГҐГ­ГЁГї ГЎГ«Г®ГЄГ 
 
         if (eventData.pointerDrag == null)
         {
@@ -38,10 +38,10 @@ public class DropZone : MonoBehaviour, IDropHandler, IPointerEnterHandler, IPoin
     }
     public void OnDrop(PointerEventData eventData)
     {
-        // Функция вызывается при высадке блока в зону выпадения
+        // Г”ГіГ­ГЄГ¶ГЁГї ГўГ»Г§Г»ГўГ ГҐГІГ±Гї ГЇГ°ГЁ ГўГ»Г±Г Г¤ГЄГҐ ГЎГ«Г®ГЄГ  Гў Г§Г®Г­Гі ГўГ»ГЇГ Г¤ГҐГ­ГЁГї
 
         Draggable d = eventData.pointerDrag.GetComponent<Draggable>();
-        if (d != null) // Предусматриваем от NullException
+        if (d != null) // ГЏГ°ГҐГ¤ГіГ±Г¬Г ГІГ°ГЁГўГ ГҐГ¬ Г®ГІ NullException
         {
             d.parentToReturnTo = transform.GetChild(0);
         }

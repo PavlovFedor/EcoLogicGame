@@ -6,13 +6,13 @@ public class CB_For : CBCycles
     public string condition = "Less";
     public int startValue = 0;
 
-    public override void Execute()
+    /*public override void Execute()
     {
         if (condition == "Less")
             for (int i = startValue; conditionFor(i); edit(i)){
                 codeBlocks[i].Execute();
             }
-    }
+    }*/
 
     public override void InitializationCB()
     {
